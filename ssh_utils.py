@@ -26,7 +26,7 @@ def ssh_checkout(host, user, passwd, cmd, text, port=22):
     # Получаем код возврата команды
     exit_code = stdout.channel.recv_exit_status()
     # Читаем вывод команды и ошибки
-    out = (stdout.read() + stderr.read()).decode("utf-8")
+    out = (stdout.read() + stderr.read()).decode('utf-8')
     # Закрываем SSH-соединение
     client.close()
     # Проверяем наличие текста в выводе команды и успешное выполнение команды
@@ -58,7 +58,7 @@ def ssh_getout(host, user, passwd, cmd, port=22):
     # Выполняем команду на удаленном хосте
     stdin, stdout, stderr = client.exec_command(cmd)
     # Читаем вывод команды и ошибки
-    out = (stdout.read() + stderr.read()).decode("utf-8")
+    out = (stdout.read() + stderr.read()).decode('utf-8')
     # Закрываем SSH-соединение
     client.close()
     return out
@@ -75,7 +75,7 @@ def upload_files(host, user, passwd, local_path, remote_path, port=22):
     remote_path (str): Путь к удаленному каталогу, куда нужно загрузить файл.
     port (int): Порт для подключения по SSH. По умолчанию 22.
     """
-    print(f"Загружаем файл {local_path} в каталог {remote_path}")
+    print(f'Загружаем файл {local_path} в каталог {remote_path}')
     # Создаем транспортное соединение
     transport = paramiko.Transport((host, port))
     transport.connect(None, username=user, password=passwd)
@@ -101,7 +101,7 @@ def download_files(host, user, passwd, remote_path, local_path, port=22):
     local_path (str): Путь к локальному каталогу, куда нужно скачать файл.
     port (int): Порт для подключения по SSH. По умолчанию 22.
     """
-    print(f"Скачиваем файл {remote_path} в каталог {local_path}")
+    print(f'Скачиваем файл {remote_path} в каталог {local_path}')
     # Создаем транспортное соединение
     transport = paramiko.Transport((host, port))
     transport.connect(None, username=user, password=passwd)
@@ -142,7 +142,7 @@ def ssh_checkout_negative(host, user, passwd, cmd, text, port=22):
     # Получаем код возврата команды
     exit_code = stdout.channel.recv_exit_status()
     # Читаем вывод команды и ошибки
-    out = (stdout.read() + stderr.read()).decode("utf-8")
+    out = (stdout.read() + stderr.read()).decode('utf-8')
     # Закрываем SSH-соединение
     client.close()
     # Проверяем наличие текста в выводе команды и что команда завершилась с ошибкой
