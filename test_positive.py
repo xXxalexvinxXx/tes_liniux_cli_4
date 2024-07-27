@@ -14,12 +14,12 @@ class TestPositive:
         """
         Проверяет наличие пакета sysstat и устанавливает его при необходимости.
         """
-        if not ssh_checkout(data["ip"], data["user"], data["passwd"], "dpkg -s sysstat",
-                            "Status: install ok installed"):
-            ssh_checkout(data["ip"], data["user"], data["passwd"],
-                         "echo '{}' | sudo -S apt-get update".format(data["passwd"]), "")
-            ssh_checkout(data["ip"], data["user"], data["passwd"],
-                         "echo '{}' | sudo -S apt-get install -y sysstat".format(data["passwd"]), "")
+        if not ssh_checkout(data['ip'], data['user'], data['passwd'], 'dpkg -s sysstat',
+                            'Status: install ok installed'):
+            ssh_checkout(data['ip'], data['user'], data['passwd'],
+                         'echo "{}" | sudo -S apt-get update'.format(data['passwd']), '')
+            ssh_checkout(data['ip'], data['user'], data['passwd'],
+                         'echo "{}" | sudo -S apt-get install -y sysstat'.format(data['passwd']), '')
 
     # опредезяем метод для сохранения логов в файл
     def save_log(self, starttime, name):
@@ -31,13 +31,13 @@ class TestPositive:
         name (str): Имя файла для сохранения лога.
         """
         with open(name, 'w') as f:
-            f.write(ssh_getout(data["ip"], data["user"], data["passwd"], "journalctl --since '{}'".format(starttime)))
+            f.write(ssh_getout(data['ip'], data['user'], data['passwd'], 'journalctl --since "{}"'.format(starttime)))
 
     def get_max_cpu_usage(self):
         """
         Возвращает максимальную загрузку процессора за время теста.
         """
-        usage = ssh_getout(data["ip"], data["user"], data["passwd"],
+        usage = ssh_getout(data['ip'], data['user'], data['passwd'],
                            "grep 'all' /tmp/mpstat.log | awk '{print $3}' | sort -nr | head -1")
         return usage.strip()
 
