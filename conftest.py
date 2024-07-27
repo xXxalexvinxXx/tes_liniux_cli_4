@@ -16,9 +16,9 @@ def make_folders():
     Создает необходимые каталоги на удаленной машине.
     """
     return ssh_checkout(
-        data["ip"], data["user"], data["passwd"],
-        "mkdir {} {} {} {}".format(data["folder_in"], data["folder_out"], data["folder_ext"], data["folder_ext2"]),
-        ""
+        data['ip'], data['user'], data['passwd'],
+        'mkdir {} {} {} {}'.format(data['folder_in'], data['folder_out'], data['folder_ext'], data['folder_ext2']),
+        ''
     )
 
 
@@ -29,11 +29,11 @@ def clear_folders():
     Очищает содержимое указанных каталогов на удаленной машине.
     """
     return ssh_checkout(
-        data["ip"], data["user"], data["passwd"],
-        "rm -rf {}/{}/* {}/* {}/* {}/*".format(
-            data["folder_in"], data["folder_out"], data["folder_ext"], data["folder_ext2"]
+        data['ip'], data['user'], data['passwd'],
+        'rm -rf {}/{}/* {}/* {}/* {}/*'.format(
+            data['folder_in'], data['folder_out'], data['folder_ext'], data['folder_ext2']
         ),
-        ""
+        ''
     )
 
 
@@ -44,12 +44,12 @@ def make_files():
     Создает указанное количество случайных файлов на удаленной машине.
     """
     list_of_files = []
-    for i in range(data["count"]):
+    for i in range(data['count']):
         filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
         if ssh_checkout(
-                data["ip"], data["user"], data["passwd"],
-                "cd {}; dd if=/dev/urandom of={} bs=1M count=1 iflag=fullblock".format(data["folder_in"], filename),
-                ""
+                data['ip'], data['user'], data['passwd'],
+                'cd {}; dd if=/dev/urandom of={} bs=1M count=1 iflag=fullblock'.format(data['folder_in'], filename),
+                ''
         ):
             list_of_files.append(filename)
     return list_of_files
@@ -64,16 +64,16 @@ def make_subfolder():
     testfilename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
     subfoldername = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
     if not ssh_checkout(
-            data["ip"], data["user"], data["passwd"],
-            "cd {}; mkdir {}".format(data["folder_in"], subfoldername),
-            ""
+            data['ip'], data['user'], data['passwd'],
+            'cd {}; mkdir {}'.format(data['folder_in'], subfoldername),
+            ''
     ):
         return None, None
     if not ssh_checkout(
-            data["ip"], data["user"], data["passwd"],
-            "cd {}/{}; dd if=/dev/urandom of={} bs=1M count=1 iflag=fullblock".format(data["folder_in"], subfoldername,
+            data['ip'], data['user'], data['passwd'],
+            'cd {}/{}; dd if=/dev/urandom of={} bs=1M count=1 iflag=fullblock'.format(data['folder_in'], subfoldername,
                                                                                       testfilename),
-            ""
+            ''
     ):
         return subfoldername, None
     else:
@@ -87,20 +87,20 @@ def make_bad_arx():
     Создает поврежденный архив на удаленной машине и удаляет его после использования.
     """
     ssh_checkout(
-        data["ip"], data["user"], data["passwd"],
-        "cd {}; 7z a {}/arxbad -t{}".format(data["folder_in"], data["folder_out"], data["type"]),
-        "Everything is Ok"
+        data['ip'], data['user'], data['passwd'],
+        'cd {}; 7z a {}/arxbad -t{}'.format(data['folder_in'], data['folder_out'], data['type']),
+        'Everything is Ok'
     )
     ssh_checkout(
-        data["ip"], data["user"], data["passwd"],
-        "truncate -s 1 {}/arxbad.{}".format(data["folder_out"], data["type"]),
-        "Everything is Ok"
+        data['ip'], data['user'], data['passwd'],
+        'truncate -s 1 {}/arxbad.{}'.format(data['folder_out'], data['type']),
+        'Everything is Ok'
     )
-    yield "arxbad"
+    yield 'arxbad'
     ssh_checkout(
-        data["ip"], data["user"], data["passwd"],
-        "rm -f {}/arxbad.{}".format(data["folder_out"], data["type"]),
-        ""
+        data['ip'], data['user'], data['passwd'],
+        'rm -f {}/arxbad.{}'.format(data['folder_out'], data['type']),
+        ''
     )
 
 
@@ -110,8 +110,8 @@ def print_time():
     """
     Выводит время начала и окончания выполнения каждого теста.
     """
-    print("Start: {}".format(datetime.now().strftime("%H:%M:%S.%f")))
-    yield print("Stop: {}".format(datetime.now().strftime("%H:%M:%S.%f")))
+    print('Start: {}'.format(datetime.now().strftime('%H:%M:%S.%f')))
+    yield print('Stop: {}'.format(datetime.now().strftime('%H:%M:%S.%f')))
 
 
 # Фикстура для получения текущего времени
@@ -120,4 +120,4 @@ def start_time():
     """
     Возвращает текущее время в формате '%Y-%m-%d %H:%M:%S'.
     """
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
