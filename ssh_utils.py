@@ -1,6 +1,40 @@
 import paramiko
+import os
+import subprocess
 
-def ssh_checkout(host, user, passwd, cmd, text, port=22):
+def ensure_ssh_key():
+    """
+    Проверяет наличие SSH-ключа и генерирует его при отсутствии.
+    """
+    ssh_key_path = os.path.expanduser('~/.ssh/id_rsa')
+    if not os.path.exists(ssh_key_path):
+        print('SSH ключ не найден. Генерация нового ключа...')
+        subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '2048', '-f', ssh_key_path, '-N', ''], check=True)
+        print('SSH ключ успешно сгенерирован.')
+    else:
+        print('SSH ключ уже существует.')
+
+ensure_ssh_key()
+
+
+def upload_ssh_key(host, user, password):
+    """
+    Загружает SSH-ключ на удалённый хост.
+    
+    Параметры:
+    host (str): IP-адрес или доменное имя удалённого хоста.
+    user (str): Имя пользователя для подключения к удалённому хосту.
+    password (str): Пароль для подключения к удалённому хосту.
+    """
+    ssh_copy_id_command = f'sshpass -p {remote_password} ssh-copy-id -o StrictHostKeyChecking=no {remote_user}@{remote_host}'
+    subprocess.run(ssh_copy_id_command, shell=True, check=True)
+    print(f'SSH ключ успешно загружен на {remote_user}@{remote_host}.')
+
+# Пример использования
+# upload_ssh_key('remote_host_ip', 'remote_user', 'remote_password')
+
+
+def ssh_checkout(host, user, passwd, cmd, text, port=22, use_key=False):
     """
     Функция для выполнения команды на удаленной машине через SSH и проверки ее вывода на наличие определенного текста.
 
@@ -11,6 +45,7 @@ def ssh_checkout(host, user, passwd, cmd, text, port=22):
     cmd (str): Команда для выполнения на удаленной машине.
     text (str): Текст, который должен присутствовать в выводе команды для успешного выполнения.
     port (int): Порт для подключения по SSH. По умолчанию 22.
+    use_key (bool): Флаг использования ssh-ключа для подключения
 
     Возвращает:
     True, если текст найден в выводе команды и команда завершилась успешно (код возврата 0), иначе False.
@@ -20,7 +55,12 @@ def ssh_checkout(host, user, passwd, cmd, text, port=22):
     # Автоматически добавляем ключи хостов
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     # Подключаемся к удаленному хосту
-    client.connect(hostname=host, username=user, password=passwd, port=port)
+    if use_key:
+        key_path = os.path.expanduser('~/.ssh/id_rsa')
+        key = paramiko.RSAKey(filename=key_path)
+        client.connect(hostname=host, username=user, pkey=key, port=port)
+    else:
+        client.connect(hostname=host, username=user, password=passwd, port=port)
     # Выполняем команду на удаленном хосте
     stdin, stdout, stderr = client.exec_command(cmd)
     # Получаем код возврата команды
